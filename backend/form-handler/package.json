@@ -1,0 +1,10 @@
+{
+  "name": "clue-form-handler",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Обработчик формы заявки сайта clue для Yandex Cloud Functions",
+  "main": "index.js",
+  "dependencies": {
+    "nodemailer": "6.9.16"
+  }
+}
