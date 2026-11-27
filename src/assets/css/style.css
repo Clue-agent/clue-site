@@ -616,6 +616,8 @@ body.menu-open{overflow:hidden}
   .bigcta__c{width:150px;font-size:14px}
   .first__steps{padding-left:28px}
   .first__steps li::before{left:-28px;top:27px}
+  .first__steps li{grid-template-columns:1fr}
+  .first__steps span{grid-row:auto;padding-top:0;margin-bottom:6px}
 }
 
 /* ========== модальное окно заявки ========== */
@@ -963,6 +965,11 @@ body.modal-open{overflow:hidden}
   .wk__i:hover h3{color:var(--blue)}
 }
 .wk:not(.wk--cur) .wk__cur{display:none}
+/* карточка «больше работ» под последним проектом: дотягивает правую колонку до низа левой */
+.wk:has(.wk__ask){align-items:stretch}
+.pj-ask.wk__ask{display:flex;flex:1;min-height:320px}
+.wk__ask .aside{margin-bottom:auto}
+.wk__ask .pj-ask__p{margin-bottom:26px}
 @media (max-width:1180px){
   .wk__im{height:340px}.wk__i--big .wk__im{height:480px}
   .wk__col--r{padding-top:140px}
@@ -980,6 +987,7 @@ body.modal-open{overflow:hidden}
   .wk__col:not(.wk__col--r) .wk__i:nth-child(2){order:3}
   .wk__col--r .wk__i:nth-child(2){order:4}
   .js .wk__i[data-rv]{transform:none}
+  .pj-ask.wk__ask{display:none}
 }
 @media (max-width:640px){
   .wk__i{flex-basis:84vw;padding:8px}

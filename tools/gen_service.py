@@ -85,7 +85,7 @@ def card(c):
 def page(d):
     has_ex = bool(d.get('example')); cards = d.get('cards')
     if cards or not has_ex:   # услуга без кейса: поля, нужные только для кадров с макетами, не требуются
-        d = {'brief': [], 'checks': [], 'lead_demo': '', 'example_name': '', 'example': 'vector', **d}
+        d = {'brief': [], 'checks': [], 'lead_demo': '', 'example_name': '', 'example': 'avtodiler', **d}
     slug = d['slug']; fmt = d['format']
     title = d.get('seo_title') or f"{d['name']} — clue"
     E = f"assets/img/cases/{d['example']}/"; W = 'assets/img/deco/'
@@ -100,12 +100,12 @@ def page(d):
     add = ''.join(f'<a class="sv-row sv-row--a" href="{h}"><b>{esc(nm)}</b><span>{esc(pr)}</span><i aria-hidden="true">→</i></a>' for nm,h,pr in d['addons'])
     # --- экраны для блока «как проходит»: меняются по мере прокрутки этапов ---
     bf = ''.join(f'<div class="pr-brief__r"><span>{esc(k)}</span><b>{esc(v)}</b></div>' for k,v in d['brief'])
-    # кадр «Прототип»: по умолчанию — VECTOR; другая услуга может задать свои тексты в JSON, ключ "wire"
-    _w = dict(name='Прототип · Desktop', brand='VECTOR', nav=['Модель', 'Технологии', 'Зарядка'], cta='Тест-драйв',
-              eyebrow='НОВАЯ МОДЕЛЬ', h1='Электромобиль нового поколения',
-              text='Запишитесь на тест-драйв в удобном салоне — перезвоним и подтвердим время.',
-              btn='Записаться на тест-драйв →', img='фото модели',
-              stats=[['600 км', 'запас хода'], ['3,9 с', 'до 100 км/ч'], ['20 мин', 'зарядка до 80%']],
+    # кадр «Прототип»: по умолчанию — Автодилер; другая услуга может задать свои тексты в JSON, ключ "wire"
+    _w = dict(name='Прототип · Desktop', brand='АВТОДИЛЕР', nav=['Комплектации', 'Цены', 'Кредит'], cta='Заявка',
+              eyebrow='В НАЛИЧИИ', h1='Будь впереди',
+              text='Комплектации, цены и расчёт платежа — на одной странице. Оставьте заявку, перезвоним.',
+              btn='Оставить заявку →', img='фото автомобиля',
+              stats=[['Цены', 'всех комплектаций'], ['Кредит', 'расчёт платежа'], ['Заявка', 'в два шага']],
               note1='Кнопка видна без прокрутки', note2='Цифры вместо длинного текста')
     _w.update(d.get('wire', {}))
     _nav = ''.join(f'<span>{esc(x)}</span>' for x in _w['nav'])
