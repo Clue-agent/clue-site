@@ -326,10 +326,13 @@
     telegram: 'https://t.me/ClueDesign',
     email: ''       // например 'mailto:hello@clue.by'
   };
-  // Форма заявки: адрес обработчика в Yandex Cloud и ключ SmartCaptcha (см. backend/form-handler/nastroika.md)
+  // Форма заявки. Сейчас заявки уходят через Web3Forms на почту аккаунта Web3Forms.
+  // Если позже подключите свой обработчик в Yandex Cloud (backend/form-handler/nastroika.md) —
+  // впишите endpoint и captchaKey: тогда заявки пойдут туда, а web3formsKey можно оставить.
   const FORM = {
     endpoint: '',   // например 'https://functions.yandexcloud.net/d4e…'
-    captchaKey: ''  // ключ клиента SmartCaptcha, например 'ysc1_…'
+    captchaKey: '', // ключ клиента SmartCaptcha, например 'ysc1_…'
+    web3formsKey: '58a15bba-64c8-412c-8cfb-0bf89a8210f4'   // публичный ключ формы Web3Forms
   };
   document.querySelectorAll('[data-todo]').forEach(a => {
     const url = CONTACTS[a.dataset.todo];
@@ -404,7 +407,8 @@
       if (badAgree) { agree.focus(); return; }
 
       const endpoint = form.dataset.endpoint || FORM.endpoint;
-      if (!endpoint) {
+      const viaW3F = !endpoint && !!FORM.web3formsKey;
+      if (!endpoint && !viaW3F) {
         status.innerHTML = 'Форма пока не подключена — ' + tgLink + '.';
         console.warn('Форма: впишите адрес обработчика в FORM.endpoint (main.js)');
         return;
@@ -419,7 +423,30 @@
           message: fd.get('message') || '', agree: agree.checked, website: fd.get('website') || '',
           t: t0 ? Date.now() - t0 : 0, token, page: location.pathname
         };
-        const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        let res;
+        if (viaW3F) {
+          // Боты: заполнили скрытое поле или отправили быстрее 3 секунд — показываем «успех», но ничего не отправляем
+          const fast = payload.t > 0 && payload.t < 3000;
+          if (payload.website || fast) res = { ok: true, status: 200 };
+          else {
+            const isMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.contact.trim());
+            const body = {
+              access_key: FORM.web3formsKey,
+              subject: 'Заявка с сайта clue: ' + (payload.format || 'без формата'),
+              from_name: 'Сайт clue.by',
+              'Формат': payload.format, 'Имя': payload.name, 'Контакт': payload.contact,
+              'Сообщение': payload.message, 'Страница': location.href,
+              botcheck: ''
+            };
+            if (isMail) body.replyto = payload.contact.trim();
+            res = await fetch('https://api.web3forms.com/submit', {
+              method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body)
+            });
+            if (res.ok) { const j = await res.json().catch(() => ({})); if (j && j.success === false) throw new Error('web3forms'); }
+          }
+        } else {
+          res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        }
         if (res.status === 429) { status.innerHTML = 'Слишком много заявок подряд. Попробуйте через час или ' + tgLink + '.'; return; }
         if (res.status === 400) { status.innerHTML = 'Не удалось подтвердить, что вы не робот. Нажмите «отправить» ещё раз или ' + tgLink + '.'; return; }
         if (!res.ok) throw new Error(res.status);
