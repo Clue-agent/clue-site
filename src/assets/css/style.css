@@ -1826,6 +1826,9 @@ body.modal-open .ck,body.menu-open .ck{opacity:0;pointer-events:none}
 .form__status a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .form__sc{margin-top:6px;font-size:12px;line-height:1.4;color:var(--muted)}
 .form__sc a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.form__hc{margin-top:16px}
+.form__hc-err.is-on{display:block}
+.field.is-err textarea{border-color:#C2261C}
 
 /* ===== Заголовки: побуквенное появление (движение задаёт JS-пружина) ===== */
 .js:not(.ft-done) :is(h1,h2,h3,h4,h5,h6):not(.sr){visibility:hidden}

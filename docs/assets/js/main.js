@@ -361,8 +361,44 @@
       wrap.classList.toggle('is-err', on);
       el.setAttribute('aria-invalid', String(on));
     };
-    contact.addEventListener('input', () => setErr(contact, contact.closest('.field'), false));
+    const nameEl = form.querySelector('[name="name"]');
+    const msgEl = form.querySelector('[name="message"]');
+    const contactErr = contact.closest('.field').querySelector('.field__err');
+    const hcErr = form.querySelector('.form__hc-err');
+    [nameEl, contact, msgEl].forEach(el => el.addEventListener('input', () => setErr(el, el.closest('.field'), false)));
     agree.addEventListener('change', () => setErr(agree, agree.closest('.check'), false));
+
+    // Правила полей. Имя: 2–50 букв (любой алфавит), пробел, дефис, апостроф, точка; цифры и прочие знаки нельзя.
+    // Контакт: телефон (7–15 цифр, можно + ( ) - и пробелы), Telegram (@ник: латиница, цифры, _, 5–32 знака; или t.me/ник) или email; до 100 знаков.
+    // Сообщение: до 1000 знаков, нельзя < и >.
+    const checkName = v => !v || /^\p{L}[\p{L} .'’-]{1,49}$/u.test(v);
+    const checkContact = v => {
+      if (!v) return 'Укажите, как с вами связаться';
+      if (v.length > 100) return 'Слишком длинный контакт — до 100 символов';
+      if (/^\+?[\d ()-]+$/.test(v)) {
+        const n = v.replace(/\D/g, '').length;
+        return n >= 7 && n <= 15 ? '' : 'В номере должно быть от 7 до 15 цифр';
+      }
+      if (/^(@|(https?:\/\/)?t\.me\/)/i.test(v) || /^[A-Za-z]\w*$/.test(v))
+        return /^(@|(https?:\/\/)?t\.me\/)?[A-Za-z]\w{4,31}$/i.test(v) ? '' : 'Ник Telegram — 5–32 символа: латинские буквы, цифры и _';
+      if (v.includes('@'))
+        return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/.test(v) ? '' : 'Проверьте адрес почты';
+      return 'Укажите телефон, ник Telegram (@ник) или email';
+    };
+    const checkMsg = v => v.length <= 1000 && !/[<>]/.test(v);
+
+    // hCaptcha через Web3Forms: скрипт грузится при первом касании формы
+    const loadHc = () => {
+      if (!FORM.web3formsKey || FORM.endpoint || form.dataset.endpoint || window.__hcLoading) return;
+      window.__hcLoading = true;
+      const s = document.createElement('script');
+      s.src = 'https://web3forms.com/client/script.js';
+      s.async = true; s.defer = true;
+      document.head.appendChild(s);
+    };
+    const hcToken = () => { const t = form.querySelector('[name="h-captcha-response"]'); return t ? t.value : ''; };
+    const hcReset = () => { try { if (window.hcaptcha) window.hcaptcha.reset(); } catch (err) {} };
+    form.addEventListener('focusin', loadHc);
 
     // Таймер заполнения и ленивая загрузка SmartCaptcha — при первом касании формы
     let t0 = 0, capId = null, capWait = null;
@@ -399,15 +435,24 @@
     form.addEventListener('submit', async e => {
       e.preventDefault();
       status.textContent = '';
-      const badContact = contact.value.trim().length < 3;
+      const badName = !checkName(nameEl.value.trim());
+      const contactMsg = checkContact(contact.value.trim());
+      const badContact = !!contactMsg;
+      const badMsg = !checkMsg(msgEl.value);
       const badAgree = !agree.checked;
+      if (badContact) contactErr.textContent = contactMsg;
+      setErr(nameEl, nameEl.closest('.field'), badName);
       setErr(contact, contact.closest('.field'), badContact);
+      setErr(msgEl, msgEl.closest('.field'), badMsg);
       setErr(agree, agree.closest('.check'), badAgree);
-      if (badContact) { contact.focus(); return; }
-      if (badAgree) { agree.focus(); return; }
+      const firstBad = [[badName, nameEl], [badContact, contact], [badMsg, msgEl], [badAgree, agree]].find(x => x[0]);
+      if (firstBad) { firstBad[1].focus(); return; }
 
       const endpoint = form.dataset.endpoint || FORM.endpoint;
       const viaW3F = !endpoint && !!FORM.web3formsKey;
+      const hcTok = viaW3F ? hcToken() : '';
+      hcErr.classList.toggle('is-on', viaW3F && !hcTok);
+      if (viaW3F && !hcTok) { loadHc(); return; }
       if (!endpoint && !viaW3F) {
         status.innerHTML = 'Форма пока не подключена — ' + tgLink + '.';
         console.warn('Форма: впишите адрес обработчика в FORM.endpoint (main.js)');
@@ -436,7 +481,7 @@
               from_name: 'Сайт clue.by',
               'Формат': payload.format, 'Имя': payload.name, 'Контакт': payload.contact,
               'Сообщение': payload.message, 'Страница': location.href,
-              botcheck: ''
+              botcheck: '', 'h-captcha-response': hcTok
             };
             if (isMail) body.replyto = payload.contact.trim();
             res = await fetch('https://api.web3forms.com/submit', {
@@ -460,6 +505,7 @@
         btn.disabled = false;
         lbl.textContent = 'отправить заявку';
         if (capId !== null && window.smartCaptcha) window.smartCaptcha.reset(capId);
+        if (viaW3F) hcReset();
       }
     });
   });

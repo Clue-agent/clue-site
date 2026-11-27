@@ -245,17 +245,19 @@
       <label><input type="radio" name="format" value="Пока не знаю"><span>Пока не знаю</span></label>
     </fieldset>
     <div class="field">
-      <input id="m-name" name="name" type="text" autocomplete="name" placeholder=" ">
+      <input id="m-name" name="name" type="text" autocomplete="name" placeholder=" " maxlength="50" aria-describedby="m-name-err">
       <label for="m-name">Имя</label>
+      <p class="field__err" id="m-name-err">Имя — от 2 до 50 букв, можно пробел, дефис, апостроф и точку</p>
     </div>
     <div class="field">
-      <input id="m-contact" name="contact" type="text" autocomplete="tel" placeholder=" " required aria-describedby="m-contact-err">
+      <input id="m-contact" name="contact" type="text" autocomplete="tel" placeholder=" " required maxlength="100" aria-describedby="m-contact-err">
       <label for="m-contact">Телефон или Telegram *</label>
       <p class="field__err" id="m-contact-err">Укажите, как с вами связаться</p>
     </div>
     <div class="field">
-      <textarea id="m-msg" name="message" rows="3" placeholder=" "></textarea>
+      <textarea id="m-msg" name="message" rows="3" placeholder=" " maxlength="1000" aria-describedby="m-msg-err"></textarea>
       <label for="m-msg">Коротко о задаче</label>
+      <p class="field__err" id="m-msg-err">До 1000 символов, без знаков &lt; и &gt;</p>
     </div>
     <label class="check">
       <input type="checkbox" name="agree" required aria-describedby="m-agree-err">
@@ -264,8 +266,11 @@
     <p class="field__err" id="m-agree-err">Нужно согласие, чтобы отправить заявку</p>
     <div class="form__hp" aria-hidden="true"><label>Ваш сайт <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     <div class="form__cap"></div>
+    <div class="h-captcha form__hc" data-captcha="true" data-lang="ru"></div>
+    <p class="field__err form__hc-err">Подтвердите, что вы не робот</p>
     <button class="btn btn--blue btn--lg form__submit" type="submit"><span class="form__lbl">отправить заявку</span> <span class="btn__ar" aria-hidden="true">→</span></button>
     <p class="form__status" role="status" aria-live="polite"></p>
+    <p class="form__sc form__hc-note">Форма защищена hCaptcha. <a href="https://www.hcaptcha.com/privacy" target="_blank" rel="noopener">Политика конфиденциальности hCaptcha</a></p>
     <p class="form__sc" hidden>Форма защищена Yandex SmartCaptcha. <a href="https://yandex.ru/legal/smartcaptcha_notice/" target="_blank" rel="noopener">Условия обработки данных</a></p>
   </div>
   <div class="form__ok" hidden tabindex="-1">
