@@ -99,6 +99,11 @@ def main():
         t = re.sub(r'<a class="btn btn--grey btn--lg btn--white" href="#zayavka" data-modal[^>]*>подробнее <span class="btn__ar" aria-hidden="true">→</span></a>', '', t)
         open(up, 'w', encoding='utf-8').write(t)
     pages = seo.process(OUT)   # canonical, превью, разметка, sitemap.xml, robots.txt, CNAME
+    # src/root/ — файлы в корень сайта как есть (подтверждение Яндекс.Вебмастера и т. п.), после seo, чтобы их не трогали
+    root = os.path.join(SRC, 'root')
+    if os.path.isdir(root):
+        for f in os.listdir(root):
+            shutil.copy(os.path.join(root, f), os.path.join(OUT, f))
     print(f'готово: {n} страниц в {OUT}, в sitemap: {len(pages)}')
 
 if __name__ == '__main__':
