@@ -36,10 +36,11 @@ SERVICE_PRICE = {
     '/uslugi/sait-kompanii/': 2500,
     '/uslugi/redizain/': 1500,
     '/uslugi/dizain-saita/': 900,
+    '/otrasli/avtosalony/': 2500,
 }
 
 # приоритеты для sitemap
-PRIORITY = {'/': '1.0', '/uslugi/': '0.9', '/proekty/': '0.8', '/kontakty/': '0.7', '/o-studii/': '0.6', '/politika/': '0.2'}
+PRIORITY = {'/': '1.0', '/uslugi/': '0.9', '/proekty/': '0.8', '/kontakty/': '0.7', '/o-studii/': '0.6', '/politika/': '0.2', '/otrasli/avtosalony/': '0.8'}
 
 
 def _url_path(rel):

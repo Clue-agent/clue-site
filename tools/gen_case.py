@@ -17,6 +17,26 @@ OTHERS = [
     ('stroy', '#E6EAF1', 'Строй', 'Редизайн сайта девелопера: новый логотип, поиск на первом экране и каталог проектов с фильтрами.', 'концепт · редизайн'),
 ]
 
+def industry(d):
+    """Ссылка с кейса на отраслевую страницу (поле "industry" в json: адрес, заголовок, текст, кнопка)."""
+    if not d.get('industry'):
+        return ''
+    href, t, p, btn = d['industry']
+    return f'''
+<!-- 11 ОТРАСЛЕВАЯ СТРАНИЦА -->
+<section class="card go" aria-labelledby="ind-t">
+  <div class="cs-blue__bg" aria-hidden="true" style="background-image:url(assets/img/deco/waves-white.svg)"></div>
+  <div class="go__tx">
+    <p class="aside aside--on-b">( для вашего бизнеса )</p>
+    <h2 class="go__t" id="ind-t" data-rv>{esc(t)}</h2>
+    <p class="go__p">{esc(p)}</p>
+  </div>
+  <div class="go__act">
+    <a class="btn btn--light btn--lg" href="{href}">{esc(btn)} <span class="btn__ar" aria-hidden="true">→</span></a>
+  </div>
+</section>
+'''
+
 def more_projects(cur):
     cards = ''
     for n, (slug, bg, name, text, tag) in enumerate([o for o in OTHERS if o[0] != cur][:3]):
@@ -165,7 +185,7 @@ def page(d):
 <a class="skip" href="#main">Перейти к содержанию</a>
 
 '''
-    out = head + cur + MNAV + '<main id="main">\n\n' + body + more_projects(d['slug']) + CTA + '</main>\n\n' + FOOTER + MODAL + '<script src="assets/js/main.js" defer></script>\n</body>\n</html>\n'
+    out = head + cur + MNAV + '<main id="main">\n\n' + body + industry(d) + more_projects(d['slug']) + CTA + '</main>\n\n' + FOOTER + MODAL + '<script src="assets/js/main.js" defer></script>\n</body>\n</html>\n'
     return rebase(out, 2, 'proekty')
 
 if __name__ == '__main__':

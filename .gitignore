@@ -8,3 +8,4 @@ _versions/
 .env
 *.zip
 desktop.ini
+tmp/
