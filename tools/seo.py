@@ -36,8 +36,8 @@ SERVICE_PRICE = {
     '/uslugi/sait-kompanii/': 2500,
     '/uslugi/redizain/': 1500,
     '/uslugi/dizain-saita/': 900,
-    '/otrasli/avtosalony/': 2500,
-    '/otrasli/studii/': 2500,
+    '/otrasli/avtosalony/': 1700,
+    '/otrasli/studii/': 1500,
 }
 
 # приоритеты для sitemap

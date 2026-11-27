@@ -490,7 +490,7 @@ body.menu-open{overflow:hidden}
 .ft__logo img{height:44px;width:auto}
 .ft__tag{font-size:17px;color:var(--dark-soft);max-width:300px}
 .ft__top .btn{margin-left:auto}
-.ft__cols{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;padding:48px 0}
+.ft__cols{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;padding:48px 0}
 .ft__cols p{font-size:14px;color:var(--dark-muted);margin-bottom:14px}
 .ft__cols a{display:block;width:max-content;padding:5px 0;font-size:18px;transition:color .45s var(--ease-btn)}
 @media (hover:hover){.ft__cols a:hover,.ft__bot a:hover{color:var(--blue-l)}}
